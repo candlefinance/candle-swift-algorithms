@@ -14,14 +14,12 @@
 //===----------------------------------------------------------------------===//
 
 /// A general-purpose sum type.
-@usableFromInline
 internal enum Either<Left, Right> {
   case left(Left)
   case right(Right)
 }
 
 extension Either: Equatable where Left: Equatable, Right: Equatable {
-  @usableFromInline
   internal static func == (lhs: Self, rhs: Self) -> Bool {
     switch (lhs, rhs) {
     case let (.left(lhs), .left(rhs)):
@@ -35,7 +33,6 @@ extension Either: Equatable where Left: Equatable, Right: Equatable {
 }
 
 extension Either: Comparable where Left: Comparable, Right: Comparable {
-  @usableFromInline
   internal static func < (lhs: Self, rhs: Self) -> Bool {
     switch (lhs, rhs) {
     case let (.left(lhs), .left(rhs)):
@@ -55,7 +52,6 @@ extension Either: Comparable where Left: Comparable, Right: Comparable {
 //===----------------------------------------------------------------------===//
 
 /// A sequence that has one of the two specified types.
-@usableFromInline
 internal enum EitherSequence<Left: Sequence, Right: Sequence>
   where Left.Element == Right.Element
 {
@@ -64,21 +60,16 @@ internal enum EitherSequence<Left: Sequence, Right: Sequence>
 }
 
 extension EitherSequence: Sequence {
-  @usableFromInline
   internal struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal var left: Left.Iterator?
     
-    @usableFromInline
     internal var right: Right.Iterator?
     
-    @inlinable
     internal mutating func next() -> Left.Element? {
       left?.next() ?? right?.next()
     }
   }
   
-  @usableFromInline
   internal func makeIterator() -> Iterator {
     switch self {
     case .left(let left):
@@ -92,10 +83,8 @@ extension EitherSequence: Sequence {
 extension EitherSequence: Collection
   where Left: Collection, Right: Collection, Left.Element == Right.Element
 {
-  @usableFromInline
   internal typealias Index = Either<Left.Index, Right.Index>
 
-  @inlinable
   internal var startIndex: Index {
     switch self {
     case .left(let s):
@@ -105,7 +94,6 @@ extension EitherSequence: Collection
     }
   }
 
-  @inlinable
   internal var endIndex: Index {
     switch self {
     case .left(let s):
@@ -115,7 +103,6 @@ extension EitherSequence: Collection
     }
   }
 
-  @inlinable
   internal subscript(position: Index) -> Element {
     switch (self, position) {
     case let (.left(s), .left(i)):
@@ -127,7 +114,6 @@ extension EitherSequence: Collection
     }
   }
 
-  @inlinable
   internal func index(after i: Index) -> Index {
     switch (self,i) {
     case let (.left(s), .left(i)):
@@ -139,7 +125,6 @@ extension EitherSequence: Collection
     }
   }
 
-  @inlinable
   internal func index(
     _ i: Index,
     offsetBy distance: Int,
@@ -155,7 +140,6 @@ extension EitherSequence: Collection
     }
   }
 
-  @inlinable
   internal func index(_ i: Index, offsetBy distance: Int) -> Index {
     switch (self, i) {
     case let (.left(s), .left(i)):
@@ -167,7 +151,6 @@ extension EitherSequence: Collection
     }
   }
 
-  @inlinable
   internal func distance(from start: Index, to end: Index) -> Int {
     switch (self, start, end) {
     case let (.left(s), .left(i), .left(j)):
@@ -183,7 +166,6 @@ extension EitherSequence: Collection
 extension EitherSequence: BidirectionalCollection
   where Left: BidirectionalCollection, Right: BidirectionalCollection
 {
-  @inlinable
   internal func index(before i: Index) -> Index {
     switch (self, i) {
     case let (.left(s), .left(i)):

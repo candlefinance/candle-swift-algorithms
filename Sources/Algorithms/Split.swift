@@ -23,19 +23,14 @@
 ///
 ///   where `x` conforms to `LazySequenceProtocol`.
 public struct SplitSequence<Base: Sequence> {
-  @usableFromInline
   internal let base: Base
 
-  @usableFromInline
   internal let isSeparator: (Base.Element) -> Bool
 
-  @usableFromInline
   internal let maxSplits: Int
 
-  @usableFromInline
   internal let omittingEmptySubsequences: Bool
 
-  @inlinable
   internal init(
     base: Base,
     isSeparator: @escaping (Base.Element) -> Bool,
@@ -53,27 +48,20 @@ extension SplitSequence: Sequence {
   public struct Iterator {
     public typealias Element = [Base.Element]
 
-    @usableFromInline
     internal var base: Base.Iterator
 
-    @usableFromInline
     internal let isSeparator: (Base.Element) -> Bool
 
-    @usableFromInline
     internal let maxSplits: Int
 
-    @usableFromInline
     internal let omittingEmptySubsequences: Bool
 
     /// The number of splits performed.
-    @usableFromInline
     internal var splitCount = 0
 
     /// The number of subsequences returned.
-    @usableFromInline
     internal var sequenceLength = 0
 
-    @inlinable
     internal init(
       base: Base.Iterator,
       whereSeparator: @escaping (Base.Element) -> Bool,
@@ -87,7 +75,6 @@ extension SplitSequence: Sequence {
     }
   }
   
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(
       base: base.makeIterator(),
@@ -99,7 +86,6 @@ extension SplitSequence: Sequence {
 }
 
 extension SplitSequence.Iterator: IteratorProtocol {
-  @inlinable
   public mutating func next() -> Element? {
     var currentElement = base.next()
     var subsequence: Element = []
@@ -226,7 +212,6 @@ extension LazySequenceProtocol {
   ///   elements.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the sequence.
-  @inlinable
   public func split(
     maxSplits: Int = Int.max,
     omittingEmptySubsequences: Bool = true,
@@ -316,7 +301,6 @@ extension LazySequenceProtocol where Element: Equatable {
   ///   elements.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the sequence.
-  @inlinable
   public func split(
     separator: Element,
     maxSplits: Int = Int.max,
@@ -347,22 +331,16 @@ extension LazySequenceProtocol where Element: Equatable {
 ///
 ///   where `x` conforms to `LazySequenceProtocol` and `Collection`.
 public struct SplitCollection<Base: Collection> {
-  @usableFromInline
   internal let base: Base
 
-  @usableFromInline
   internal let isSeparator: (Base.Element) -> Bool
 
-  @usableFromInline
   internal let maxSplits: Int
 
-  @usableFromInline
   internal let omittingEmptySubsequences: Bool
 
-  @usableFromInline
   internal var _startIndex: Index
 
-  @inlinable
   internal init(
     base: Base,
     isSeparator: @escaping (Base.Element) -> Bool,
@@ -404,20 +382,16 @@ extension SplitCollection: Collection {
   /// Position of a subsequence in a split collection.
   public struct Index: Comparable {
     /// The range corresponding to the subsequence at this position.
-    @usableFromInline
     internal let baseRange: Range<Base.Index>
 
     /// The number of subsequences up to and including this position in the
     /// collection.
-    @usableFromInline
     internal let sequenceLength: Int
 
     /// The number splits performed up to and including this position in the
     /// collection.
-    @usableFromInline
     internal let splitCount: Int
 
-    @inlinable
     internal init(
       baseRange: Range<Base.Index>,
       sequenceLength: Int,
@@ -428,14 +402,12 @@ extension SplitCollection: Collection {
       self.splitCount = splitCount
     }
 
-    @inlinable
     public static func == (lhs: Index, rhs: Index) -> Bool {
       // `sequenceLength` is equivalent to the index's 1-based position in the
       // collection of indices.
       lhs.sequenceLength == rhs.sequenceLength
     }
 
-    @inlinable
     public static func < (lhs: Index, rhs: Index) -> Bool {
       lhs.sequenceLength < rhs.sequenceLength
     }
@@ -443,7 +415,6 @@ extension SplitCollection: Collection {
 
   /// Returns the index of the subsequence starting at or after the given base
   /// collection index.
-  @inlinable
   internal func indexForSubsequence(
     atOrAfter lowerBound: Base.Index,
     sequenceLength: Int,
@@ -491,12 +462,10 @@ extension SplitCollection: Collection {
     )
   }
 
-  @inlinable
   public var startIndex: Index {
     _startIndex
   }
 
-  @inlinable
   public var endIndex: Index {
     Index(
       baseRange: base.endIndex..<base.endIndex,
@@ -505,7 +474,6 @@ extension SplitCollection: Collection {
     )
   }
 
-  @inlinable
   public func index(after i: Index) -> Index {
     precondition(i != endIndex, "Can't advance past endIndex")
 
@@ -542,7 +510,6 @@ extension SplitCollection: Collection {
     )
   }
 
-  @inlinable
   public subscript(position: Index) -> Base.SubSequence {
     precondition(position != endIndex, "Can't subscript using endIndex")
     return base[position.baseRange]
@@ -550,7 +517,6 @@ extension SplitCollection: Collection {
 }
 
 extension SplitCollection.Index: Hashable {
-  @inlinable
   public func hash(into hasher: inout Hasher) {
     hasher.combine(sequenceLength)
   }
@@ -641,7 +607,6 @@ extension LazySequenceProtocol where Self: Collection, Elements: Collection {
   ///   elements.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   public func split(
     maxSplits: Int = Int.max,
     omittingEmptySubsequences: Bool = true,
@@ -738,7 +703,6 @@ extension LazySequenceProtocol
   ///   elements.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   public func split(
     separator: Element,
     maxSplits: Int = Int.max,

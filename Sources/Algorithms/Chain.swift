@@ -14,14 +14,12 @@ public struct Chain2Sequence<Base1: Sequence, Base2: Sequence>
   where Base1.Element == Base2.Element
 {
   /// The first sequence in this chain.
-  @usableFromInline
   internal let base1: Base1
   
   /// The second sequence in this chain.
-  @usableFromInline
   internal let base2: Base2
 
-  @inlinable
+
   internal init(base1: Base1, base2: Base2) {
     self.base1 = base1
     self.base2 = base2
@@ -31,25 +29,23 @@ public struct Chain2Sequence<Base1: Sequence, Base2: Sequence>
 extension Chain2Sequence: Sequence {
   /// The iterator for a `Chain2Sequence` instance.
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal var iterator1: Base1.Iterator
     
-    @usableFromInline
     internal var iterator2: Base2.Iterator
     
-    @inlinable
+  
     internal init(_ concatenation: Chain2Sequence) {
       iterator1 = concatenation.base1.makeIterator()
       iterator2 = concatenation.base2.makeIterator()
     }
     
-    @inlinable
+  
     public mutating func next() -> Base1.Element? {
       return iterator1.next() ?? iterator2.next()
     }
   }
   
-  @inlinable
+
   public func makeIterator() -> Iterator {
     Iterator(self)
   }
@@ -63,28 +59,26 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
     // is not to be used as a value - iterating over indices should go straight
     // from the penultimate index of the first collection to the start of the
     // second.
-    @usableFromInline
     internal enum Representation: Equatable {
       case first(Base1.Index)
       case second(Base2.Index)
     }
 
-    @usableFromInline
     internal let position: Representation
 
     /// Creates a new index into the first underlying collection.
-    @inlinable
+  
     internal init(first i: Base1.Index) {
       position = .first(i)
     }
 
     /// Creates a new index into the second underlying collection.
-    @inlinable
+  
     internal init(second i: Base2.Index) {
       position = .second(i)
     }
 
-    @inlinable
+  
     public static func < (lhs: Index, rhs: Index) -> Bool {
       switch (lhs.position, rhs.position) {
       case (.first, .second):
@@ -101,24 +95,24 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
   
   /// Converts an index of `Base1` to the corresponding `Index` by mapping
   /// `base1.endIndex` to `base2.startIndex`.
-  @inlinable
+
   internal func normalizeIndex(_ i: Base1.Index) -> Index {
     i == base1.endIndex ? Index(second: base2.startIndex) : Index(first: i)
   }
 
-  @inlinable
+
   public var startIndex: Index {
     // if `base1` is empty, this will return `base2.startIndex` - if `base2` is
     // also empty, this will correctly equal `base2.endIndex`
     normalizeIndex(base1.startIndex)
   }
 
-  @inlinable
+
   public var endIndex: Index {
     Index(second: base2.endIndex)
   }
 
-  @inlinable
+
   public subscript(i: Index) -> Base1.Element {
     switch i.position {
     case let .first(i):
@@ -128,7 +122,7 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
     }
   }
 
-  @inlinable
+
   public func index(after i: Index) -> Index {
     switch i.position {
     case let .first(i):
@@ -139,7 +133,7 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
     }
   }
   
-  @inlinable
+
   public func index(_ i: Index, offsetBy distance: Int) -> Index {
     guard distance != 0 else { return i }
     
@@ -148,7 +142,7 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
       : offsetBackward(i, by: -distance)
   }
   
-  @inlinable
+
   public func index(
     _ i: Index,
     offsetBy distance: Int,
@@ -165,21 +159,21 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
     }
   }
 
-  @inlinable
+
   internal func offsetForward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetForward(i, by: distance, limitedBy: endIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
   
-  @inlinable
+
   internal func offsetBackward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetBackward(i, by: distance, limitedBy: startIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
 
-  @inlinable
+
   internal func offsetForward(
     _ i: Index, by distance: Int, limitedBy limit: Index
   ) -> Index? {
@@ -212,7 +206,7 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
     }
   }
 
-  @inlinable
+
   internal func offsetBackward(
     _ i: Index, by distance: Int, limitedBy limit: Index
   ) -> Index? {
@@ -246,7 +240,7 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
     }
   }
   
-  @inlinable
+
   public func distance(from start: Index, to end: Index) -> Int {
     switch (start.position, end.position) {
     case let (.first(i), .first(j)):
@@ -266,7 +260,7 @@ extension Chain2Sequence: Collection where Base1: Collection, Base2: Collection 
 extension Chain2Sequence: BidirectionalCollection
   where Base1: BidirectionalCollection, Base2: BidirectionalCollection
 {
-  @inlinable
+
   public func index(before i: Index) -> Index {
     assert(i != startIndex, "Can't advance before startIndex")
     switch i.position {
@@ -313,7 +307,6 @@ extension Chain2Sequence: RandomAccessCollection
 ///   then over the elements of `s2`.
 ///
 /// - Complexity: O(1)
-@inlinable
 public func chain<S1, S2>(_ s1: S1, _ s2: S2) -> Chain2Sequence<S1, S2> {
   Chain2Sequence(base1: s1, base2: s2)
 }

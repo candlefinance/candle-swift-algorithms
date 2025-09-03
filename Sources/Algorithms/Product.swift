@@ -12,14 +12,11 @@
 /// A sequence that represents the product of two sequences' elements.
 public struct Product2Sequence<Base1: Sequence, Base2: Collection> {
   /// The outer sequence in the product.
-  @usableFromInline
   internal let base1: Base1
   
   /// The inner sequence in the product.
-  @usableFromInline
   internal let base2: Base2
   
-  @inlinable
   internal init(_ base1: Base1, _ base2: Base2) {
     self.base1 = base1
     self.base2 = base2
@@ -31,16 +28,11 @@ extension Product2Sequence: Sequence {
   
   /// The iterator for a `Product2Sequence` sequence.
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal var i1: Base1.Iterator
-    @usableFromInline
     internal var i2: Base2.Iterator
-    @usableFromInline
     internal var element1: Base1.Element?
-    @usableFromInline
     internal let base2: Base2
 
-    @inlinable
     internal init(_ c: Product2Sequence) {
       self.base2 = c.base2
       self.i1 = c.base1.makeIterator()
@@ -48,7 +40,6 @@ extension Product2Sequence: Sequence {
       self.element1 = nil
     }
     
-    @inlinable
     public mutating func next() -> (Base1.Element,
                                     Base2.Element)? {
       // This is the initial state, where i1.next() has never
@@ -83,7 +74,6 @@ extension Product2Sequence: Sequence {
     }
   }
 
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(self)
   }
@@ -92,42 +82,34 @@ extension Product2Sequence: Sequence {
 extension Product2Sequence: Collection where Base1: Collection {
   /// The index type for a `Product2Sequence` collection.
   public struct Index: Comparable {
-    @usableFromInline
     internal var i1: Base1.Index
-    @usableFromInline
     internal var i2: Base2.Index
     
-    @inlinable
     internal init(i1: Base1.Index, i2: Base2.Index) {
       self.i1 = i1
       self.i2 = i2
     }
     
-    @inlinable
     public static func < (lhs: Index, rhs: Index) -> Bool {
       (lhs.i1, lhs.i2) < (rhs.i1, rhs.i2)
     }
   }
   
-  @inlinable
   public var count: Int {
     base1.count * base2.count
   }
   
-  @inlinable
   public var startIndex: Index {
     Index(
       i1: base2.isEmpty ? base1.endIndex : base1.startIndex,
       i2: base2.startIndex)
   }
   
-  @inlinable
   public var endIndex: Index {
     // `base2.startIndex` simplifies index calculations.
     Index(i1: base1.endIndex, i2: base2.startIndex)
   }
   
-  @inlinable
   public subscript(position: Index) -> (Base1.Element,
                                         Base2.Element) {
     (base1[position.i1], base2[position.i2])
@@ -136,20 +118,17 @@ extension Product2Sequence: Collection where Base1: Collection {
   /// Forms an index from a pair of base indices, normalizing
   /// `(i, base2.endIndex)` to `(base1.index(after: i), base2.startIndex)` if
   /// necessary.
-  @inlinable
   internal func normalizeIndex(_ i1: Base1.Index, _ i2: Base2.Index) -> Index {
     i2 == base2.endIndex
       ? Index(i1: base1.index(after: i1), i2: base2.startIndex)
       : Index(i1: i1, i2: i2)
   }
   
-  @inlinable
   public func index(after i: Index) -> Index {
     precondition(i.i1 != base1.endIndex, "Can't advance past endIndex")
     return normalizeIndex(i.i1, base2.index(after: i.i2))
   }
   
-  @inlinable
   public func distance(from start: Index, to end: Index) -> Int {
     guard start.i1 <= end.i1
       else { return -distance(from: end, to: start) }
@@ -203,7 +182,6 @@ extension Product2Sequence: Collection where Base1: Collection {
     }
   }
   
-  @inlinable
   public func index(_ i: Index, offsetBy distance: Int) -> Index {
     guard distance != 0 else { return i }
     
@@ -212,7 +190,6 @@ extension Product2Sequence: Collection where Base1: Collection {
       : offsetBackward(i, by: -distance)
   }
   
-  @inlinable
   public func index(
     _ i: Index,
     offsetBy distance: Int,
@@ -229,21 +206,18 @@ extension Product2Sequence: Collection where Base1: Collection {
     }
   }
 
-  @inlinable
   internal func offsetForward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetForward(i, by: distance, limitedBy: endIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
   
-  @inlinable
   internal func offsetBackward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetBackward(i, by: distance, limitedBy: startIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
   
-  @inlinable
   internal func offsetForward(
     _ i: Index, by distance: Int, limitedBy limit: Index
   ) -> Index? {
@@ -321,7 +295,6 @@ extension Product2Sequence: Collection where Base1: Collection {
       .map { i2 in Index(i1: i1, i2: i2) }
   }
 
-  @inlinable
   internal func offsetBackward(
     _ i: Index, by distance: Int, limitedBy limit: Index
   ) -> Index? {
@@ -423,7 +396,6 @@ extension Product2Sequence: Collection where Base1: Collection {
 extension Product2Sequence: BidirectionalCollection
   where Base1: BidirectionalCollection, Base2: BidirectionalCollection
 {
-  @inlinable
   public func index(before i: Index) -> Index {
     precondition(i != startIndex,
                  "Can't move before startIndex")
@@ -480,7 +452,6 @@ extension Product2Sequence.Index: Hashable
 ///   - s2: The second sequence to iterate over.
 ///
 /// - Complexity: O(1)
-@inlinable
 public func product<Base1: Sequence, Base2: Collection>(
   _ s1: Base1, _ s2: Base2
 ) -> Product2Sequence<Base1, Base2> {

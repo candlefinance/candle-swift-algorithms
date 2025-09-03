@@ -18,7 +18,6 @@ extension Sequence {
   ///
   /// - Parameters:
   ///   - keyForValue: A closure that returns a key for each element in `self`.
-  @inlinable
   public func keyed<Key>(
     by keyForValue: (Element) throws -> Key
   ) rethrows -> [Key: Element] {
@@ -38,7 +37,6 @@ extension Sequence {
   ///   - resolve: A closure that is called with the values for any duplicate
   ///     keys that are encountered. The closure returns the desired value for
   ///     the final dictionary.
-  @inlinable
   public func keyed<Key>(
     by keyForValue: (Element) throws -> Key,
     resolvingConflictsWith resolve: (Key, Element, Element) throws -> Element

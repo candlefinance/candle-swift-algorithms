@@ -26,7 +26,6 @@ extension Sequence {
   /// - Parameter step: The amount to step with each iteration.
   /// - Returns: Returns a sequence for stepping through the elements by the
   ///   specified amount.
-  @inlinable
   public func striding(by step: Int) -> StridingSequence<Self> {
     StridingSequence(base: self, stride: step)
   }
@@ -46,7 +45,6 @@ extension Collection {
   /// - Parameter step: The amount to step with each iteration.
   /// - Returns: Returns a collection for stepping through the elements by the
   ///   specified amount.
-  @inlinable
   public func striding(by step: Int) -> StridingCollection<Self> {
     StridingCollection(base: self, stride: step)
   }
@@ -54,13 +52,10 @@ extension Collection {
 
 /// A wrapper that strides over a base sequence.
 public struct StridingSequence<Base: Sequence> {
-  @usableFromInline
   internal let base: Base
   
-  @usableFromInline
   internal let stride: Int
   
-  @inlinable
   internal init(base: Base, stride: Int) {
     precondition(stride > 0, "Stride must be greater than zero")
     self.base = base
@@ -69,7 +64,6 @@ public struct StridingSequence<Base: Sequence> {
 }
 
 extension StridingSequence {
-  @inlinable
   public func striding(by step: Int) -> Self {
     Self(base: base, stride: stride * step)
   }
@@ -78,22 +72,17 @@ extension StridingSequence {
 extension StridingSequence: Sequence {
   /// An iterator over a `StridingSequence` instance.
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal var iterator: Base.Iterator
     
-    @usableFromInline
     internal let stride: Int
     
-    @usableFromInline
     internal var striding: Bool = false
     
-    @inlinable
     internal init(iterator: Base.Iterator, stride: Int) {
       self.iterator = iterator
       self.stride = stride
     }
     
-    @inlinable
     public mutating func next() -> Base.Element? {
       guard striding else {
         striding = true
@@ -106,7 +95,6 @@ extension StridingSequence: Sequence {
     }
   }
   
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(iterator: base.makeIterator(), stride: stride)
   }
@@ -117,13 +105,10 @@ extension StridingSequence: LazySequenceProtocol
 
 /// A wrapper that strides over a base collection.
 public struct StridingCollection<Base: Collection> {
-  @usableFromInline
   internal let base: Base
   
-  @usableFromInline
   internal let stride: Int
   
-  @inlinable
   internal init(base: Base, stride: Int) {
     precondition(stride > 0, "striding must be greater than zero")
     self.base = base
@@ -132,7 +117,6 @@ public struct StridingCollection<Base: Collection> {
 }
 
 extension StridingCollection {
-  @inlinable
   public func striding(by step: Int) -> Self {
     Self(base: base, stride: stride * step)
   }
@@ -141,42 +125,34 @@ extension StridingCollection {
 extension StridingCollection: Collection {
   /// A position in a `StridingCollection` instance.
   public struct Index: Comparable {
-    @usableFromInline
     internal let base: Base.Index
     
-    @usableFromInline
     internal init(_ base: Base.Index) {
       self.base = base
     }
     
-    @inlinable
     public static func < (lhs: Index, rhs: Index) -> Bool {
       lhs.base < rhs.base
     }
   }
   
-  @inlinable
   public var startIndex: Index {
     Index(base.startIndex)
   }
   
-  @inlinable
   public var endIndex: Index {
     Index(base.endIndex)
   }
   
-  @inlinable
   public subscript(i: Index) -> Base.Element {
     base[i.base]
   }
   
-  @inlinable
   public func index(after i: Index) -> Index {
     precondition(i.base != base.endIndex, "Advancing past end index")
     return index(i, offsetBy: 1)
   }
   
-  @inlinable
   public func index(
     _ i: Index,
     offsetBy n: Int,
@@ -190,7 +166,6 @@ extension StridingCollection: Collection {
       : offsetBackward(i, offsetBy: -n, limitedBy: limit)
   }
   
-  @inlinable
   internal func offsetForward(
     _ i: Index,
     offsetBy n: Int,
@@ -220,7 +195,6 @@ extension StridingCollection: Collection {
     }
   }
   
-  @inlinable
   internal func offsetBackward(
     _ i: Index,
     offsetBy n: Int,
@@ -242,18 +216,15 @@ extension StridingCollection: Collection {
     ).map(Index.init)
   }
   
-  @inlinable
   public var count: Int {
     base.isEmpty ? 0 : (base.count - 1) / stride + 1
   }
   
-  @inlinable
   public func distance(from start: Index, to end: Index) -> Int {
     let distance = base.distance(from: start.base, to: end.base)
     return distance / stride + (distance % stride).signum()
   }
   
-  @inlinable
   public func index(_ i: Index, offsetBy distance: Int) -> Index {
     precondition(distance <= 0 || i.base != base.endIndex, "Advancing past end index")
     precondition(distance >= 0 || i.base != base.startIndex, "Incrementing past start index")
@@ -267,7 +238,6 @@ extension StridingCollection: Collection {
 extension StridingCollection: BidirectionalCollection
   where Base: RandomAccessCollection {
   
-  @inlinable
   public func index(before i: Index) -> Index {
     precondition(i.base != base.startIndex, "Incrementing past start index")
     return index(i, offsetBy: -1)

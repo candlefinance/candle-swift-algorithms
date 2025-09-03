@@ -12,14 +12,11 @@
 /// A sequence wrapper that leaves out duplicate elements of a base sequence.
 public struct UniquedSequence<Base: Sequence, Subject: Hashable> {
   /// The base collection.
-  @usableFromInline
   internal let base: Base
   
   /// The projection function.
-  @usableFromInline
   internal let projection: (Base.Element) -> Subject
   
-  @usableFromInline
   internal init(base: Base, projection: @escaping (Base.Element) -> Subject) {
     self.base = base
     self.projection = projection
@@ -29,16 +26,12 @@ public struct UniquedSequence<Base: Sequence, Subject: Hashable> {
 extension UniquedSequence: Sequence {
   /// The iterator for a `UniquedSequence` instance.
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal var base: Base.Iterator
     
-    @usableFromInline
     internal let projection: (Base.Element) -> Subject
     
-    @usableFromInline
     internal var seen: Set<Subject> = []
     
-    @usableFromInline
     internal init(
       base: Base.Iterator,
       projection: @escaping (Base.Element) -> Subject
@@ -47,7 +40,6 @@ extension UniquedSequence: Sequence {
       self.projection = projection
     }
     
-    @inlinable
     public mutating func next() -> Base.Element? {
       while let element = base.next() {
         if seen.insert(projection(element)).inserted {
@@ -58,7 +50,6 @@ extension UniquedSequence: Sequence {
     }
   }
   
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(base: base.makeIterator(), projection: projection)
   }
@@ -83,7 +74,6 @@ extension Sequence where Element: Hashable {
   /// - Returns: A sequence with only the unique elements of this sequence.
   ///  .
   /// - Complexity: O(1).
-  @inlinable
   public func uniqued() -> UniquedSequence<Self, Element> {
     UniquedSequence(base: self, projection: { $0 })
   }
@@ -111,7 +101,6 @@ extension Sequence {
   ///   determined by the result of `projection` for each element.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the sequence.
-  @inlinable
   public func uniqued<Subject: Hashable>(
     on projection: (Element) throws -> Subject
   ) rethrows -> [Element] {
@@ -136,7 +125,6 @@ extension LazySequenceProtocol {
   /// of each unique element.
   ///
   /// - Complexity: O(1).
-  @inlinable
   public func uniqued<Subject: Hashable>(
     on projection: @escaping (Element) -> Subject
   ) -> UniquedSequence<Self, Subject> {

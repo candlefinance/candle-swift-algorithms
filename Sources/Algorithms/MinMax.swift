@@ -11,7 +11,6 @@
 
 extension Sequence {
   /// Implementation for min(count:areInIncreasingOrder:)
-  @inlinable
   internal func _minImplementation(
     count: Int,
     sortedBy areInIncreasingOrder: (Element, Element) throws -> Bool
@@ -38,7 +37,6 @@ extension Sequence {
   }
   
   /// Implementation for max(count:areInIncreasingOrder:)
-  @inlinable
   internal func _maxImplementation(
     count: Int,
     sortedBy areInIncreasingOrder: (Element, Element) throws -> Bool
@@ -100,7 +98,6 @@ extension Sequence {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   sequence and *k* is `count`.
-  @inlinable
   public func min(
     count: Int,
     sortedBy areInIncreasingOrder: (Element, Element) throws -> Bool
@@ -145,7 +142,6 @@ extension Sequence {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   sequence and *k* is `count`.
-  @inlinable
   public func max(
     count: Int,
     sortedBy areInIncreasingOrder: (Element, Element) throws -> Bool
@@ -186,7 +182,6 @@ extension Sequence where Element: Comparable {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   sequence and *k* is `count`.
-  @inlinable
   public func min(count: Int) -> [Element] {
     min(count: count, sortedBy: <)
   }
@@ -212,7 +207,6 @@ extension Sequence where Element: Comparable {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   sequence and *k* is `count`.
-  @inlinable
   public func max(count: Int) -> [Element] {
     max(count: count, sortedBy: <)
   }
@@ -246,7 +240,6 @@ extension Collection {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   collection and *k* is `count`.
-  @inlinable
   public func min(
     count: Int,
     sortedBy areInIncreasingOrder: (Element, Element) throws -> Bool
@@ -300,7 +293,6 @@ extension Collection {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   collection and *k* is `count`.
-  @inlinable
   public func max(
     count: Int,
     sortedBy areInIncreasingOrder: (Element, Element) throws -> Bool
@@ -350,7 +342,6 @@ extension Collection where Element: Comparable {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   collection and *k* is `count`.
-  @inlinable
   public func min(count: Int) -> [Element] {
     min(count: count, sortedBy: <)
   }
@@ -376,7 +367,6 @@ extension Collection where Element: Comparable {
   ///
   /// - Complexity: O(*k* log *k* + *nk*), where *n* is the length of the
   ///   collection and *k* is `count`.
-  @inlinable
   public func max(count: Int) -> [Element] {
     max(count: count, sortedBy: <)
   }
@@ -426,7 +416,6 @@ extension Sequence {
   ///   method returns `nil`.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the sequence.
-  @inlinable
   public func minAndMax(
     by areInIncreasingOrder: (Element, Element) throws -> Bool
   ) rethrows -> (min: Element, max: Element)? {
@@ -475,7 +464,6 @@ extension Sequence where Element: Comparable {
   ///   method returns `nil`.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the sequence.
-  @inlinable
   public func minAndMax() -> (min: Element, max: Element)? {
     minAndMax(by: <)
   }

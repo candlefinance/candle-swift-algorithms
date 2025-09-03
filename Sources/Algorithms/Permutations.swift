@@ -28,7 +28,6 @@ extension MutableCollection
   ///   is in ascending order according to `areInIncreasingOrder`.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   internal mutating func nextPermutation(upperBound: Index? = nil) -> Bool {
     // Ensure we have > 1 element in the collection.
     guard !isEmpty else { return false }
@@ -78,17 +77,14 @@ extension MutableCollection
 /// A sequence of all the permutations of a collection's elements.
 public struct PermutationsSequence<Base: Collection> {
   /// The base collection to iterate over for permutations.
-  @usableFromInline
   internal let base: Base
   
-  @usableFromInline
   internal let baseCount: Int
   
   /// The range of accepted sizes of permutations.
   ///
   /// - Note: This may be empty if the attempted range entirely exceeds the
   /// bounds of the size of the `base` collection.
-  @usableFromInline
   internal let kRange: Range<Int>
   
   /// Initializes a `PermutationsSequence` for all permutations of `base` of
@@ -98,7 +94,6 @@ public struct PermutationsSequence<Base: Collection> {
   ///   - base: The collection to iterate over for permutations
   ///   - k: The expected size of each permutation, or `nil` (default) to
   ///   iterate over all permutations of the same size as the base collection.
-  @inlinable
   internal init(_ base: Base, k: Int? = nil) {
     let kRange: ClosedRange<Int>?
     if let countToChoose = k {
@@ -116,7 +111,6 @@ public struct PermutationsSequence<Base: Collection> {
   ///   - base: The collection to iterate over for permutations.
   ///   - kRange: The range of accepted sizes of permutations, or `nil` to
   ///   iterate over all permutations of the same size as the base collection.
-  @inlinable
   internal init<R: RangeExpression>(
     _ base: Base, kRange: R?
   ) where R.Bound == Int {
@@ -130,7 +124,6 @@ public struct PermutationsSequence<Base: Collection> {
   }
   
   /// The total number of permutations.
-  @inlinable
   public var count: Int {
     kRange.map {
       stride(from: baseCount, to: baseCount - $0, by: -1).reduce(1, *)
@@ -141,29 +134,23 @@ public struct PermutationsSequence<Base: Collection> {
 extension PermutationsSequence: Sequence {
   /// The iterator for a `PermutationsSequence` instance.
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal let base: Base
     
-    @usableFromInline
     internal let baseCount: Int
     
     /// The current range of accepted sizes of permutations.
     /// - Note: The range is contracted until empty while iterating over
     /// permutations of different sizes. When the range is empty, iteration is
     /// finished.
-    @usableFromInline
     internal var kRange: Range<Int>
     
     /// Whether or not iteration is finished (`kRange` is empty)
-    @inlinable
     internal var isFinished: Bool {
       return kRange.isEmpty
     }
     
-    @usableFromInline
     internal var indexes: [Base.Index]
     
-    @inlinable
     internal init(_ permutations: PermutationsSequence) {
       self.base = permutations.base
       self.baseCount = permutations.baseCount
@@ -182,7 +169,6 @@ extension PermutationsSequence: Sequence {
     ///   is in ascending order.
     ///
     /// - Complexity: O(*n*), where *n* is the length of the collection.
-    @inlinable
     internal mutating func nextState() -> Bool {
       let countToChoose = self.kRange.lowerBound
       let edge = countToChoose - 1
@@ -213,7 +199,6 @@ extension PermutationsSequence: Sequence {
       return true
     }
     
-    @inlinable
     public mutating func next() -> [Base.Element]? {
       guard !isFinished else { return nil }
       
@@ -257,7 +242,6 @@ extension PermutationsSequence: Sequence {
     }
   }
   
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(self)
   }
@@ -327,7 +311,6 @@ extension Collection {
   /// - Complexity: O(1) for random-access base collections. O(*n*) where *n*
   ///   is the number of elements in the base collection, since
   ///   `PermutationsSequence` accesses the `count` of the base collection.
-  @inlinable
   public func permutations<R: RangeExpression>(
     ofCount kRange: R
   ) -> PermutationsSequence<Self> where R.Bound == Int {
@@ -383,7 +366,6 @@ extension Collection {
   /// - Complexity: O(1) for random-access base collections. O(*n*) where *n*
   ///   is the number of elements in the base collection, since
   ///   `PermutationsSequence` accesses the `count` of the base collection.
-  @inlinable
   public func permutations(ofCount k: Int? = nil) -> PermutationsSequence<Self> {
     precondition(
       k ?? 0 >= 0,
@@ -403,18 +385,14 @@ extension Collection {
 /// `uniquePermutations` methods on your collection.
 public struct UniquePermutationsSequence<Base: Collection> {
   /// The base collection to iterate over for permutations.
-  @usableFromInline
   internal let base: Base
   
-  @usableFromInline
   internal var indexes: [Base.Index]
   
-  @usableFromInline
   internal let kRange: Range<Int>
 }
 
 extension UniquePermutationsSequence where Base.Element: Hashable {
-  @inlinable
   internal static func _indexes(_ base: Base) -> [Base.Index] {
     let firstIndexesAndCountsByElement = Dictionary(
       base.indices.lazy.map { (base[$0], ($0, 1)) },
@@ -425,14 +403,12 @@ extension UniquePermutationsSequence where Base.Element: Hashable {
       .flatMap { index, count in repeatElement(index, count: count) }
   }
   
-  @inlinable
   internal init(_ elements: Base) {
     self.indexes = Self._indexes(elements)
     self.base = elements
     self.kRange = self.indexes.count ..< (self.indexes.count + 1)
   }
 
-  @inlinable
   internal init<R: RangeExpression>(_ base: Base, _ range: R)
     where R.Bound == Int
   {
@@ -448,26 +424,20 @@ extension UniquePermutationsSequence where Base.Element: Hashable {
 extension UniquePermutationsSequence: Sequence {
   /// The iterator for a `UniquePermutationsSequence` instance.
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal let base: Base
     
-    @usableFromInline
     internal var indexes: [Base.Index]
     
-    @usableFromInline
     internal var lengths: Range<Int>
 
-    @usableFromInline
     internal var initial = true
 
-    @inlinable
     internal init(_ elements: Base, indexes: [Base.Index], lengths: Range<Int>) {
       self.base = elements
       self.indexes = indexes
       self.lengths = lengths
     }
     
-    @inlinable
     public mutating func next() -> [Base.Element]? {
       // In the end case, `lengths` is an empty range.
       if lengths.isEmpty {
@@ -495,7 +465,6 @@ extension UniquePermutationsSequence: Sequence {
     }
   }
   
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(base, indexes: indexes, lengths: kRange)
   }
@@ -543,7 +512,6 @@ extension Collection where Element: Hashable {
   ///
   /// - Complexity: O(*n*), where *n* is the number of elements in this
   ///   collection.
-  @inlinable
   public func uniquePermutations(ofCount k: Int? = nil)
     -> UniquePermutationsSequence<Self>
   {
@@ -583,7 +551,6 @@ extension Collection where Element: Hashable {
   ///
   /// - Complexity: O(*n*), where *n* is the number of elements in this
   ///   collection.
-  @inlinable
   public func uniquePermutations<R: RangeExpression>(
     ofCount kRange: R
   ) -> UniquePermutationsSequence<Self> where R.Bound == Int {

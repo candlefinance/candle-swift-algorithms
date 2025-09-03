@@ -29,7 +29,6 @@ extension MutableCollection where Self: BidirectionalCollection {
   ///
   /// - Postcondition: For returned indices `(lower, upper)`:
   ///   `lower == limit || upper == limit`
-  @inlinable
   @discardableResult
   internal mutating func _reverse(
     subrange: Range<Index>, until limit: Index
@@ -56,7 +55,6 @@ extension MutableCollection where Self: BidirectionalCollection {
   /// - Parameter subrange: The subrange of this collection to reverse.
   ///
   /// - Complexity: O(*n*), where *n* is the length of `subrange`.
-  @inlinable
   public mutating func reverse(subrange: Range<Index>) {
     if subrange.isEmpty { return }
     var lower = subrange.lowerBound
@@ -94,7 +92,6 @@ extension MutableCollection {
   ///   - distance(from: lhs.lowerBound, to: p) == distance(from:
   ///     rhs.lowerBound, to: q)
   ///   - p == lhs.upperBound || q == rhs.upperBound
-  @inlinable
   internal mutating func _swapNonemptySubrangePrefixes(
     _ lhs: Range<Index>, _ rhs: Range<Index>
   ) -> (Index, Index) {
@@ -133,7 +130,6 @@ extension MutableCollection {
   ///   `subrange` pre-rotation.
   ///
   /// - Complexity: O(*n*), where *n* is the length of `subrange`.
-  @inlinable
   @discardableResult
   public mutating func rotate(
     subrange: Range<Index>,
@@ -211,7 +207,6 @@ extension MutableCollection {
   /// - Returns: The new index of the element that was first pre-rotation.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   @discardableResult
   public mutating func rotate(toStartAt newStart: Index) -> Index {
     rotate(subrange: startIndex..<endIndex, toStartAt: newStart)
@@ -240,7 +235,6 @@ extension MutableCollection where Self: BidirectionalCollection {
   ///   `subrange` pre-rotation.
   ///
   /// - Complexity: O(*n*), where *n* is the length of `subrange`.
-  @inlinable
   @discardableResult
   public mutating func rotate(
     subrange: Range<Index>,
@@ -271,7 +265,6 @@ extension MutableCollection where Self: BidirectionalCollection {
   /// - Returns: The new index of the element that was first pre-rotation.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   @discardableResult
   public mutating func rotate(toStartAt newStart: Index) -> Index {
     rotate(subrange: startIndex..<endIndex, toStartAt: newStart)

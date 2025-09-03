@@ -11,17 +11,13 @@
 
 /// A collection consisting of all the elements contained in a collection of
 /// collections.
-@usableFromInline
 internal struct FlattenCollection<Base: Collection>
   where Base.Element: Collection
 {
-  @usableFromInline
   internal let base: Base
   
-  @usableFromInline
   internal let indexOfFirstNonEmptyElement: Base.Index
   
-  @inlinable
   internal init(base: Base) {
     self.base = base
     self.indexOfFirstNonEmptyElement = base.endOfPrefix(while: { $0.isEmpty })
@@ -29,35 +25,28 @@ internal struct FlattenCollection<Base: Collection>
 }
 
 extension FlattenCollection: Collection {
-  @usableFromInline
   internal struct Index: Comparable {
-    @usableFromInline
     internal let outer: Base.Index
     
-    @usableFromInline
     internal let inner: Base.Element.Index?
     
-    @inlinable
     init(outer: Base.Index, inner: Base.Element.Index?) {
       self.outer = outer
       self.inner = inner
     }
     
-    @inlinable
     internal static func < (lhs: Self, rhs: Self) -> Bool {
       guard lhs.outer == rhs.outer else { return lhs.outer < rhs.outer }
       return lhs.inner == nil ? false : lhs.inner! < rhs.inner!
     }
   }
   
-  @inlinable
   internal var startIndex: Index {
     let outer = indexOfFirstNonEmptyElement
     let inner = outer == base.endIndex ? nil : base[outer].startIndex
     return Index(outer: outer, inner: inner)
   }
   
-  @inlinable
   internal var endIndex: Index {
     Index(outer: base.endIndex, inner: nil)
   }
@@ -65,7 +54,6 @@ extension FlattenCollection: Collection {
   /// Forms an index from a pair of base indices, normalizing
   /// `(i, base2.endIndex)` to `(base1.index(after: i), base2.startIndex)` if
   /// necessary.
-  @inlinable
   internal func normalizeIndex(
     outer: Base.Index,
     inner: Base.Element.Index
@@ -80,19 +68,16 @@ extension FlattenCollection: Collection {
     }
   }
   
-  @inlinable
   internal func index(after index: Index) -> Index {
     let element = base[index.outer]
     let nextInner = element.index(after: index.inner!)
     return normalizeIndex(outer: index.outer, inner: nextInner)
   }
   
-  @inlinable
   internal subscript(position: Index) -> Base.Element.Element {
     base[position.outer][position.inner!]
   }
   
-  @inlinable
   internal func distance(from start: Index, to end: Index) -> Int {
     guard start.outer <= end.outer
       else { return -distance(from: end, to: start) }
@@ -111,7 +96,6 @@ extension FlattenCollection: Collection {
     return firstPart + middlePart + lastPart
   }
   
-  @inlinable
   internal func index(_ index: Index, offsetBy distance: Int) -> Index {
     guard distance != 0 else { return index }
     
@@ -120,7 +104,6 @@ extension FlattenCollection: Collection {
       : offsetBackward(index, by: -distance)
   }
   
-  @inlinable
   internal func index(
     _ index: Index,
     offsetBy distance: Int,
@@ -139,21 +122,18 @@ extension FlattenCollection: Collection {
     }
   }
   
-  @inlinable
   internal func offsetForward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetForward(i, by: distance, limitedBy: endIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
   
-  @inlinable
   internal func offsetBackward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetBackward(i, by: distance, limitedBy: startIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
   
-  @inlinable
   internal func offsetForward(
     _ index: Index, by distance: Int, limitedBy limit: Index
   ) -> Index? {
@@ -213,7 +193,6 @@ extension FlattenCollection: Collection {
     }
   }
   
-  @inlinable
   internal func offsetBackward(
     _ index: Index, by distance: Int, limitedBy limit: Index
   ) -> Index? {
@@ -276,7 +255,6 @@ extension FlattenCollection: Collection {
 extension FlattenCollection: BidirectionalCollection
   where Base: BidirectionalCollection, Base.Element: BidirectionalCollection
 {
-  @inlinable
   internal func index(before index: Index) -> Index {
     if let inner = index.inner {
       let element = base[index.outer]
@@ -304,7 +282,6 @@ extension FlattenCollection: LazySequenceProtocol, LazyCollectionProtocol
 extension Collection where Element: Collection {
   /// Returns the concatenation of the elements in this collection of
   /// collections.
-  @inlinable
   internal func joined() -> FlattenCollection<Self> {
     FlattenCollection(base: self)
   }

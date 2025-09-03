@@ -38,7 +38,6 @@ extension Collection {
   /// - Complexity: O(1) if the collection conforms to
   ///   `RandomAccessCollection`, otherwise O(*k*) where `k` is `count`.
   ///   Access to successive windows is O(1).
-  @inlinable
   public func windows(ofCount count: Int) -> WindowsOfCountCollection<Self> {
     WindowsOfCountCollection(base: self, windowSize: count)
   }
@@ -47,16 +46,12 @@ extension Collection {
 /// A collection wrapper that presents a sliding window over the elements of
 /// a collection.
 public struct WindowsOfCountCollection<Base: Collection> {
-  @usableFromInline
   internal let base: Base
   
-  @usableFromInline
   internal let windowSize: Int
   
-  @usableFromInline
   internal var endOfFirstWindow: Base.Index?
 
-  @inlinable
   internal init(base: Base, windowSize: Int) {
     precondition(windowSize > 0, "Windows size must be greater than zero")
     self.base = base
@@ -69,30 +64,24 @@ public struct WindowsOfCountCollection<Base: Collection> {
 extension WindowsOfCountCollection: Collection {
   /// A position in a `WindowsOfCountCollection` instance.
   public struct Index: Comparable {
-    @usableFromInline
     internal var lowerBound: Base.Index
     
-    @usableFromInline
     internal var upperBound: Base.Index
     
-    @inlinable
     internal init(lowerBound: Base.Index, upperBound: Base.Index) {
       self.lowerBound = lowerBound
       self.upperBound = upperBound
     }
     
-    @inlinable
     public static func == (lhs: Index, rhs: Index) -> Bool {
       lhs.lowerBound == rhs.lowerBound
     }
     
-    @inlinable
     public static func < (lhs: Index, rhs: Index) -> Bool {
       lhs.lowerBound < rhs.lowerBound
     }
   }
   
-  @inlinable
   public var startIndex: Index {
     if let upperBound = endOfFirstWindow {
       return Index(lowerBound: base.startIndex, upperBound: upperBound)
@@ -101,12 +90,10 @@ extension WindowsOfCountCollection: Collection {
     }
   }
   
-  @inlinable
   public var endIndex: Index {
     Index(lowerBound: base.endIndex, upperBound: base.endIndex)
   }
   
-  @inlinable
   public subscript(index: Index) -> Base.SubSequence {
     precondition(
       index.lowerBound != index.upperBound,
@@ -114,7 +101,6 @@ extension WindowsOfCountCollection: Collection {
     return base[index.lowerBound..<index.upperBound]
   }
   
-  @inlinable
   public func index(after index: Index) -> Index {
     precondition(index != endIndex, "Advancing past end index")
     guard index.upperBound < base.endIndex else { return endIndex }
@@ -126,7 +112,6 @@ extension WindowsOfCountCollection: Collection {
     return Index(lowerBound: lowerBound, upperBound: upperBound)
   }
   
-  @inlinable
   public func index(_ i: Index, offsetBy distance: Int) -> Index {
     guard distance != 0 else { return i }
     
@@ -135,7 +120,6 @@ extension WindowsOfCountCollection: Collection {
       : offsetBackward(i, by: -distance)
   }
   
-  @inlinable
   public func index(
     _ i: Index,
     offsetBy distance: Int,
@@ -155,21 +139,18 @@ extension WindowsOfCountCollection: Collection {
     }
   }
   
-  @inlinable
   internal func offsetForward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetForward(i, by: distance, limitedBy: endIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
   
-  @inlinable
   internal func offsetBackward(_ i: Index, by distance: Int) -> Index {
     guard let index = offsetBackward(i, by: distance, limitedBy: startIndex)
       else { fatalError("Index is out of bounds") }
     return index
   }
   
-  @inlinable
   internal func offsetForward(
     _ i: Index, by distance: Int, limitedBy limit: Index
   ) -> Index? {
@@ -240,7 +221,6 @@ extension WindowsOfCountCollection: Collection {
     }
   }
   
-  @inlinable
   internal func offsetBackward(
       _ i: Index, by distance: Int, limitedBy limit: Index
     ) -> Index? {
@@ -302,7 +282,6 @@ extension WindowsOfCountCollection: Collection {
     }
   }
   
-  @inlinable
   public func distance(from start: Index, to end: Index) -> Int {
     guard start <= end else { return -distance(from: end, to: start) }
     guard start != end else { return 0 }
@@ -334,7 +313,6 @@ extension WindowsOfCountCollection: Collection {
 extension WindowsOfCountCollection: BidirectionalCollection
   where Base: BidirectionalCollection
 {
-  @inlinable
   public func index(before index: Index) -> Index {
     precondition(index != startIndex, "Incrementing past start index")
     if index == endIndex {

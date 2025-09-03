@@ -14,24 +14,19 @@
 public struct CompactedSequence<Base: Sequence, Element>: Sequence
   where Base.Element == Element? {
 
-  @usableFromInline
   let base: Base
   
-  @inlinable
   init(base: Base) {
     self.base = base
   }
 
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     var base: Base.Iterator
     
-    @inlinable
     init(base: Base.Iterator) {
       self.base = base
     }
     
-    @inlinable
     public mutating func next() -> Element? {
       while let wrapped = base.next() {
         guard let some = wrapped else { continue }
@@ -41,7 +36,6 @@ public struct CompactedSequence<Base: Sequence, Element>: Sequence
     }
   }
 
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(base: base.makeIterator())
   }
@@ -66,7 +60,6 @@ extension Sequence {
   ///   `Sequence`.
   ///
   /// Complexity: O(1)
-  @inlinable
   public func compacted<Unwrapped>() -> CompactedSequence<Self, Unwrapped>
     where Element == Unwrapped? {
     CompactedSequence(base: self)
@@ -78,10 +71,8 @@ extension Sequence {
 public struct CompactedCollection<Base: Collection, Element>: Collection
   where Base.Element == Element? {
 
-  @usableFromInline
   let base: Base
   
-  @inlinable
   init(base: Base) {
     self.base = base
     let idx = base.firstIndex(where: { $0 != nil }) ?? base.endIndex
@@ -89,10 +80,8 @@ public struct CompactedCollection<Base: Collection, Element>: Collection
   }
   
   public struct Index {
-    @usableFromInline
     let base: Base.Index
     
-    @inlinable
     init(base: Base.Index) {
       self.base = base
     }
@@ -100,15 +89,12 @@ public struct CompactedCollection<Base: Collection, Element>: Collection
   
   public var startIndex: Index
   
-  @inlinable
   public var endIndex: Index { Index(base: base.endIndex) }
   
-  @inlinable
   public subscript(position: Index) -> Element {
     base[position.base]!
   }
   
-  @inlinable
   public func index(after i: Index) -> Index {
     precondition(i != endIndex, "Index out of bounds")
     
@@ -122,7 +108,6 @@ public struct CompactedCollection<Base: Collection, Element>: Collection
 extension CompactedCollection: BidirectionalCollection
   where Base: BidirectionalCollection {
 
-  @inlinable
   public func index(before i: Index) -> Index {
     precondition(i != startIndex, "Index out of bounds")
     
@@ -135,7 +120,6 @@ extension CompactedCollection: BidirectionalCollection
 }
 
 extension CompactedCollection.Index: Comparable {  
-  @inlinable
   public static func < (lhs: CompactedCollection.Index,
                         rhs: CompactedCollection.Index) -> Bool {
     lhs.base < rhs.base
@@ -165,7 +149,6 @@ extension Collection {
   ///
   /// Complexity: O(*n*) where *n* is the number of elements in the
   /// original `Collection`.
-  @inlinable
   public func compacted<Unwrapped>() -> CompactedCollection<Self, Unwrapped>
     where Element == Unwrapped?
   {

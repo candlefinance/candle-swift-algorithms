@@ -12,10 +12,8 @@
 /// A collection wrapper that repeats the elements of a base collection.
 public struct CycledSequence<Base: Collection> {
   /// The collection to repeat.
-  @usableFromInline
   internal let base: Base
   
-  @inlinable
   internal init(base: Base) {
     self.base = base
   }
@@ -24,19 +22,15 @@ public struct CycledSequence<Base: Collection> {
 extension CycledSequence: Sequence {
   /// The iterator for a `CycledSequence` instance.
   public struct Iterator: IteratorProtocol {
-    @usableFromInline
     internal let base: Base
     
-    @usableFromInline
     internal var current: Base.Index
     
-    @inlinable
     internal init(base: Base) {
       self.base = base
       self.current = base.startIndex
     }
     
-    @inlinable
     public mutating func next() -> Base.Element? {
       guard !base.isEmpty else { return nil }
       
@@ -49,7 +43,6 @@ extension CycledSequence: Sequence {
     }
   }
   
-  @inlinable
   public func makeIterator() -> Iterator {
     Iterator(base: base)
   }
@@ -62,10 +55,8 @@ extension CycledSequence: LazySequenceProtocol
 /// finite number of times.
 public struct CycledTimesCollection<Base: Collection> {
   /// A `Product2Sequence` instance for iterating the base collection.
-  @usableFromInline
   internal let product: Product2Sequence<Range<Int>, Base>
 
-  @inlinable
   internal init(base: Base, times: Int) {
     self.product = Product2Sequence(0..<times, base)
   }
@@ -77,58 +68,47 @@ extension CycledTimesCollection: Collection {
   public struct Index: Comparable {
     /// The index corresponding to the `Product2Sequence` index at this
     /// position.
-    @usableFromInline
     internal let productIndex: Product2Sequence<Range<Int>, Base>.Index
 
-    @inlinable
     internal init(_ productIndex: Product2Sequence<Range<Int>, Base>.Index) {
       self.productIndex = productIndex
     }
 
-    @inlinable
     public static func == (lhs: Index, rhs: Index) -> Bool {
       lhs.productIndex == rhs.productIndex
     }
 
-    @inlinable
     public static func < (lhs: Index, rhs: Index) -> Bool {
       lhs.productIndex < rhs.productIndex
     }
   }
 
-  @inlinable
   public var startIndex: Index {
     Index(product.startIndex)
   }
 
-  @inlinable
   public var endIndex: Index {
     Index(product.endIndex)
   }
 
-  @inlinable
   public subscript(_ index: Index) -> Element {
     product[index.productIndex].1
   }
 
-  @inlinable
   public func index(after i: Index) -> Index {
     let productIndex = product.index(after: i.productIndex)
     return Index(productIndex)
   }
 
-  @inlinable
   public func distance(from start: Index, to end: Index) -> Int {
     product.distance(from: start.productIndex, to: end.productIndex)
   }
 
-  @inlinable
   public func index(_ i: Index, offsetBy distance: Int) -> Index {
     let productIndex = product.index(i.productIndex, offsetBy: distance)
     return Index(productIndex)
   }
 
-  @inlinable
   public func index(
     _ i: Index,
     offsetBy distance: Int,
@@ -142,7 +122,6 @@ extension CycledTimesCollection: Collection {
     return Index(productIndex)
   }
 
-  @inlinable
   public var count: Int {
     product.count
   }
@@ -150,7 +129,6 @@ extension CycledTimesCollection: Collection {
 
 extension CycledTimesCollection: BidirectionalCollection
   where Base: BidirectionalCollection {
-  @inlinable
   public func index(before i: Index) -> Index {
     let productIndex = product.index(before: i.productIndex)
     return Index(productIndex)
@@ -193,7 +171,6 @@ extension Collection {
   ///   forever.
   ///
   /// - Complexity: O(1)
-  @inlinable
   public func cycled() -> CycledSequence<Self> {
     CycledSequence(base: self)
   }
@@ -215,7 +192,6 @@ extension Collection {
   ///   times.
   ///
   /// - Complexity: O(1)
-  @inlinable
   public func cycled(times: Int) -> CycledTimesCollection<Self> {
     CycledTimesCollection(base: self, times: times)
   }

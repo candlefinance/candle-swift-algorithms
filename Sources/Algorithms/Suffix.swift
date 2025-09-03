@@ -23,7 +23,6 @@ extension BidirectionalCollection {
   ///   will not be called again.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   public func suffix(
     while predicate: (Element) throws -> Bool
   ) rethrows -> SubSequence {
@@ -45,7 +44,6 @@ extension Collection {
   ///   be called again.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   public func endOfPrefix(
     while predicate: (Element) throws -> Bool
   ) rethrows -> Index {
@@ -71,7 +69,6 @@ extension BidirectionalCollection {
   ///   be called again.
   ///
   /// - Complexity: O(*n*), where *n* is the length of the collection.
-  @inlinable
   public func startOfSuffix(
     while predicate: (Element) throws -> Bool
   ) rethrows -> Index {
