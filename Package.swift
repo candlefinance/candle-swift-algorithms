@@ -13,7 +13,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-algorithms",
+    name: "candle-swift-algorithms",
     products: [
         .library(
             name: "CandleAlgorithms",
