@@ -32,12 +32,12 @@ extension Double {
   }
 }
 #elseif swift(>=5.11)
-internal import RealModule
+internal import CandleRealModule
 #elseif swift(>=5.10)
-import RealModule
+import CandleRealModule
 #else
 @_implementationOnly
-import RealModule
+import CandleRealModule
 #endif
 
 //===----------------------------------------------------------------------===//
@@ -59,13 +59,13 @@ extension Collection {
     count k: Int, using rng: inout G
   ) -> [Element] {
     guard k > 0 else { return [] }
-    
+
     var remainingCount = count
     guard k < remainingCount else { return Array(self) }
-    
+
     var result: [Element] = []
     result.reserveCapacity(k)
-    
+
     var i = startIndex
     var countToSelect = k
     while countToSelect > 0 {
@@ -78,10 +78,10 @@ extension Collection {
       formIndex(after: &i)
       remainingCount -= 1
     }
-    
+
     return result
   }
-  
+
   /// Randomly selects the specified number of elements from this collection,
   /// maintaining their relative order.
   ///
@@ -141,22 +141,22 @@ extension Collection {
     var w = 1.0
     var result: [Element] = []
     result.reserveCapacity(k)
-    
+
     // Fill the reservoir with the first `k` elements.
     var i = startIndex
     while i != endIndex, result.count < k {
       result.append(self[i])
       formIndex(after: &i)
     }
-    
+
     while i != endIndex {
       // Calculate the next value of w.
       w *= nextW(k: k, using: &rng)
-      
+
       // Find index of the next element to swap into the reservoir.
       let offset = nextOffset(w: w, using: &rng)
       i = index(i, offsetBy: offset, limitedBy: endIndex) ?? endIndex
-      
+
       if i != endIndex {
         // Swap selected element with a randomly chosen one in the reservoir.
         let j = Int.random(in: 0..<result.count, using: &rng)
@@ -164,12 +164,12 @@ extension Collection {
         formIndex(after: &i)
       }
     }
-    
+
     // FIXME: necessary?
     result.shuffle(using: &rng)
     return result
   }
-  
+
   /// Randomly selects the specified number of elements from this collection.
   ///
   /// This method is equivalent to calling `randomSample(k:using:)`, passing in
@@ -204,11 +204,11 @@ extension Sequence {
     count k: Int, using rng: inout G
   ) -> [Element] {
     guard k > 0 else { return [] }
-    
+
     var w = 1.0
     var result: [Element] = []
     result.reserveCapacity(k)
-    
+
     // Fill the reservoir with the first `k` elements.
     var iterator = makeIterator()
     while result.count < k, let el = iterator.next() {
@@ -218,26 +218,26 @@ extension Sequence {
     while true {
       // Calculate the next value of w.
       w *= nextW(k: k, using: &rng)
-      
+
       // Find the offset of the next element to swap into the reservoir.
       var offset = nextOffset(w: w, using: &rng)
-      
+
       // Skip over `offset` elements to find the selected element.
       while offset > 0, let _ = iterator.next() {
         offset -= 1
       }
       guard let nextElement = iterator.next() else { break }
-      
+
       // Swap selected element with a randomly chosen one in the reservoir.
       let j = Int.random(in: 0..<result.count, using: &rng)
       result[j] = nextElement
     }
-    
+
     // FIXME: necessary?
     result.shuffle(using: &rng)
     return result
   }
-  
+
   /// Randomly selects the specified number of elements from this sequence.
   ///
   /// This method is equivalent to calling `randomSample(k:using:)`, passing in
