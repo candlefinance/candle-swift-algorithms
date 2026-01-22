@@ -20,7 +20,7 @@ let package = Package(
             targets: ["CandleAlgorithms"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/candlefinance/swift-numerics.git", name: "candle-swift-numerics", branch: "fix-candle-1.1.0"),
+        .package(name: "candle-swift-numerics", url: "https://github.com/candlefinance/swift-numerics.git", branch: "fix-candle-1.1.0"),
     ],
     targets: [
         .target(
