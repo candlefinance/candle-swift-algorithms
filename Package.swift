@@ -20,13 +20,13 @@ let package = Package(
             targets: ["CandleAlgorithms"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/candlefinance/swift-numerics.git", branch: "fix-candle-1.1.0"),
+        .package(url: "https://github.com/candlefinance/swift-numerics.git", name: "candle-swift-numerics", branch: "fix-candle-1.1.0"),
     ],
     targets: [
         .target(
             name: "CandleAlgorithms",
             dependencies: [
-              .product(name: "CandleRealModule", package: "swift-numerics"),
+              .product(name: "CandleRealModule", package: "candle-swift-numerics"),
             ]),
         .testTarget(
             name: "SwiftAlgorithmsTests",
