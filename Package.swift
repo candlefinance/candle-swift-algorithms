@@ -13,7 +13,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "candle-swift-algorithms",
+    name: "swift-algorithms",
     products: [
         .library(
             name: "CandleAlgorithms",
@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "CandleAlgorithms",
             dependencies: [
-              .product(name: "CandleRealModule", package: "candle-swift-numerics"),
+              .product(name: "CandleRealModule", package: "swift-numerics"),
             ]),
         .testTarget(
             name: "SwiftAlgorithmsTests",
